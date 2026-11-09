@@ -1,0 +1,255 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Love Surprise ❤️</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#ff5f9e,#ffc3d8,#ffb6a3);
+  overflow-x: hidden;
+}
+
+.card {
+  width: 100%;
+  max-width: 440px;
+  padding: 35px 22px;
+  background: white;
+  border-radius: 25px;
+  text-align: center;
+  box-shadow: 0 10px 40px #9b315544;
+}
+
+h1 { color: #ff3975; }
+
+p { color: #777; font-size: 17px; }
+
+.emoji { font-size: 65px; }
+
+input {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  margin: 12px 0;
+  border: 2px solid pink;
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+button {
+  display: inline-block;
+  padding: 15px 24px;
+  margin: 8px 4px;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.yes {
+  background: #ff3975;
+  color: white;
+}
+
+.no {
+  background: #ddd;
+  color: #333;
+}
+
+.share {
+  background: #20a45b;
+  color: white;
+}
+
+[hidden] { display: none !important; }
+
+.heart {
+  position: fixed;
+  bottom: -30px;
+  pointer-events: none;
+  animation: float 4s linear forwards;
+}
+
+@keyframes float {
+  to {
+    transform: translateY(-110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@media(max-width:480px) {
+  .card { padding: 28px 16px; }
+  h1 { font-size: 25px; }
+  button { padding: 14px 18px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <section id="home">
+    <div class="emoji">💗</div>
+    <h1>Love Surprise</h1>
+    <p>Create something special for your love!</p>
+
+    <input id="your" placeholder="Your name">
+    <input id="partner" placeholder="Partner name">
+
+    <button class="yes" onclick="createProposal()">
+      Create Proposal ❤️
+    </button>
+  </section>
+
+  <section id="question" hidden>
+    <div class="emoji">🥰</div>
+    <h1 id="heading"></h1>
+    <p>Will you be mine forever? 💍</p>
+
+    <button class="yes" onclick="sayYes()">YES ❤️</button>
+    <button class="no" id="noButton">NO 🙈</button>
+  </section>
+
+  <section id="answer" hidden>
+    <div class="emoji">💞</div>
+    <h1>YAYYYYY! ❤️</h1>
+    <p>I LOVE YOU FOREVER! 😘</p>
+    <div class="emoji">🌹💕💍</div>
+  </section>
+
+  <section id="sharing" hidden>
+    <div class="emoji">💌</div>
+    <h1>Your link is ready!</h1>
+    <input id="link" readonly>
+    <button class="share" onclick="copyLink()">Copy Link</button>
+    <button class="yes" onclick="shareLink()">Share ❤️</button>
+  </section>
+
+</div>
+
+<script>
+const home = document.getElementById("home");
+const question = document.getElementById("question");
+const answer = document.getElementById("answer");
+const sharing = document.getElementById("sharing");
+
+const params = new URLSearchParams(location.search);
+
+function openProposal(a,b) {
+  home.hidden = true;
+  sharing.hidden = true;
+  question.hidden = false;
+
+  document.getElementById("heading").textContent =
+    "Hey " + b + "! " + a + " has a question for you! ❤️";
+}
+
+if (params.has("from") && params.has("to")) {
+  openProposal(params.get("from"),params.get("to"));
+}
+
+function createProposal() {
+  const a = document.getElementById("your").value.trim();
+  const b = document.getElementById("partner").value.trim();
+
+  if (!a || !b) {
+    alert("Please enter both names ❤️");
+    return;
+  }
+
+  const url = new URL(location.href);
+  url.search = "";
+  url.searchParams.set("from",a);
+  url.searchParams.set("to",b);
+
+  document.getElementById("link").value = url.href;
+
+  home.hidden = true;
+  sharing.hidden = false;
+}
+
+function sayYes() {
+  question.hidden = true;
+  answer.hidden = false;
+
+  for(let i=0;i<35;i++) {
+    setTimeout(makeHeart,i*100);
+  }
+}
+
+function moveNo() {
+  const btn = document.getElementById("noButton");
+
+  const x = Math.random() *
+    (window.innerWidth - btn.offsetWidth - 20);
+
+  const y = Math.random() *
+    (window.innerHeight - btn.offsetHeight - 20);
+
+  btn.style.position = "fixed";
+  btn.style.left = Math.max(5,x) + "px";
+  btn.style.top = Math.max(5,y) + "px";
+}
+
+const noButton = document.getElementById("noButton");
+
+noButton.addEventListener("mouseenter",moveNo);
+noButton.addEventListener("touchstart",function(e) {
+  e.preventDefault();
+  moveNo();
+});
+
+function makeHeart() {
+  const h = document.createElement("div");
+  h.className = "heart";
+  h.textContent = "❤️";
+  h.style.left = Math.random()*100 + "vw";
+  h.style.fontSize = "25px";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),4000);
+}
+
+async function copyLink() {
+  const value = document.getElementById("link").value;
+
+  try {
+    await navigator.clipboard.writeText(value);
+    alert("Link copied! ❤️");
+  } catch(e) {
+    document.getElementById("link").select();
+    alert("Please copy the selected link.");
+  }
+}
+
+async function shareLink() {
+  const value = document.getElementById("link").value;
+
+  if(navigator.share) {
+    try {
+      await navigator.share({
+        title:"Love Surprise ❤️",
+        text:"I made something special for you!",
+        url:value
+      });
+    } catch(e) {}
+  } else {
+    copyLink();
+  }
+}
+</script>
+
+</body>
+</html>
